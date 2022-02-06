@@ -1,50 +1,56 @@
-#define GL_SILENCE_DEPRECATION
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include <iostream>
+#include "window/window.h"
+#include "shaders/shader.h"
+#include "objects/objects.h"
+#include "camera/camera.h"
+#include "scene/scene.h"
 
 int main(){
-    /* INIT GLFW */
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+   Window window(800, 600, "Hello World", glm::vec3(0.1f, 0.1f, 0.1f));
+   window.enable3d();
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
+   Shader shader("shaders/shader.shader");
+   Scene scene;
+   
+   scene.setUp(); //add objects
+   
+   Camera camera(glm::vec3(0.0f, 0.0f ,3.0f), glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+   Light sceneLight{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 5.0f, 0.0f), 2.0f, 2.0f};
+   
+   while(window.isOpen()){
+       camera.move(&window.win);
+       scene.setView(&window, &camera);
+       window.clearColor(window.color.r, window.color.g, window.color.b, 1.0f);
+       window.clearBuffers();
+       
+       //starts gui frame, all gui calls need to happen after this and before the end call
+       window.enableGui();
+       //main demo window, each gui window can(not neccessary) have its own scope
+       {
+        window.startGuiElement("Main Window");
+        window.setGuiColor("BackGround Color", &window.color);
+        window.displayGuiFloat3("Camera Position", camera.position.x, camera.position.y, camera.position.z);
+       }
+       //stops gui frame
+       window.stopGuiElement();
 
-    /* WINDOW INIT */
-    const unsigned int width = 800, height = 600;
-    GLFWwindow *win = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
-    if(!win){
-        std::cerr << "Error creating OpenGL window" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    glfwMakeContextCurrent(win);
-    glViewport(0, 0, width, height);
+       shader.use();
+       shader.setFloat("lightStr", sceneLight.strength);
+       shader.setFloat("n", sceneLight.n);
+       shader.setVec3("cameraPosition", camera.position);
+       shader.setVec3("ambientVal", sceneLight.ambient);
+       shader.setVec3("specularVal", sceneLight.specular);
+       shader.setVec3("lightCol", sceneLight.color);
+       shader.setVec3("lightPos", sceneLight.position);
+       shader.setMat4("projection", scene.projection);
+       shader.setMat4("view", scene.view);
 
-    /* GLEW INIT */
-    glewExperimental = true;
-    if(glewInit() != GLEW_OK){
-        std::cerr << "ERROR INITIALIZING GLEW" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    /* MAIN RENDER LOOP */
-    while(!glfwWindowShouldClose(win)){
-
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glfwSwapBuffers(win); //swap front and back buffer
-        glfwPollEvents();
-    }
-
-    return 0;
-
-
-
+       scene.render(&shader); //render objects
+       window.renderGui();
+       window.swapBuffers();
+       window.pollEvents();
+   }
+   scene.deleteScene();
+   window.quitGui();
+   window.quit();
 }
