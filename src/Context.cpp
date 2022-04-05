@@ -31,7 +31,7 @@ void Context::initContext( ){
 #endif
 
     /* WINDOW INIT */
-    this->mID = glfwCreateWindow(this->mWidth, this->mHeight, "Hello World", NULL, NULL);
+    this->mID = glfwCreateWindow(this->mWidth, this->mHeight, this->mName, NULL, NULL);
     if(!mID){
         std::cerr << "Error creating OpenGL window" << std::endl;
         exit(EXIT_FAILURE);

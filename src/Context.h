@@ -18,8 +18,12 @@
 class Context{
     protected:
         GLFWwindow* mID;
+        
+        //change these 3 attributes per project
         const int mWidth = 1280;
         const int mHeight = 720;
+        const char* mName = "Hello World";
+
         const glm::vec4 mColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
         glm::mat4 mPerspective = glm::perspective(glm::radians(45.0f), (float)mWidth / (float)mHeight, 0.1f, 500.0f); 
         std::vector<unsigned int> mVaos; //vertex arrays
