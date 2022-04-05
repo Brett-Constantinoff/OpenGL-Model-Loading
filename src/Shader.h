@@ -3,8 +3,6 @@
 
 #include <string>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 struct shaderSource{
     std::string vertexSource;
@@ -13,17 +11,20 @@ struct shaderSource{
 
 class Shader{
     public:
-        int ID;
         Shader(const std::string &filepath);
-        void use(void);
-        void setMat4(const std::string &name, const glm::mat4 &matrix);
-        void setVec3(const std::string &name, const glm::vec3 &color);
-        void setFloat(const std::string &name, const float &value);
-        void setInt(const std::string &name, const int &value);
+        unsigned int getId( void );
+        void setVec3(const char* location, glm::vec3 uniform);
+        void setVec4(const char* location, glm::vec4 uniform);
+        void setMat4(const char* location, glm::mat4 uniform);
+        void setInt(const char* location, int uniform);
+        
     private:
+        int mID;
         shaderSource parseShader(const std::string &filePath);
         unsigned int compileShader(const std::string &source, unsigned int type); 
-    
+        
 };
+
+
 
 #endif

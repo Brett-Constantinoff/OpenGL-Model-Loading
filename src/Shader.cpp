@@ -1,54 +1,56 @@
-#include "shader.h"
+#include "Shader.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 
 Shader::Shader(const std::string &filepath){
-    ID = glCreateProgram(); //creates current shader program
+    mID = glCreateProgram(); //creates current shader program
 
     shaderSource source = Shader::parseShader(filepath);
     unsigned int vShader = Shader::compileShader(source.vertexSource, GL_VERTEX_SHADER); //compiles vertex source
     unsigned int fShader = Shader::compileShader(source.fragmentSource, GL_FRAGMENT_SHADER); //compiles fragment source
 
     //attaches shaders to program
-    glAttachShader(ID, vShader);
-    glAttachShader(ID, fShader);
+    glAttachShader(mID, vShader);
+    glAttachShader(mID, fShader);
     //links the shader program
-    glLinkProgram(ID);
+    glLinkProgram(mID);
     //ensures successful linking
-    glValidateProgram(ID);
+    glValidateProgram(mID);
 
     glDeleteShader(vShader);
     glDeleteShader(fShader);
+}
+
+unsigned int Shader::getId( void ){
+    return mID;
 }
 
 unsigned int Shader::compileShader(const std::string &source, unsigned int type){
     
     const char* src = source.c_str(); //returns a pointer to source
 
-    unsigned int shaderID = glCreateShader(type); //generates a shader ID
-    glShaderSource(shaderID, 1, &src, nullptr); //fills source code for desired shader
-    glCompileShader(shaderID); //compiles shader
+    unsigned int shadermID = glCreateShader(type); //generates a shader mID
+    glShaderSource(shadermID, 1, &src, nullptr); //fills source code for desired shader
+    glCompileShader(shadermID); //compiles shader
 
     //ensures succesful compilation
     int success;
     char infoLog[512];
-    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(shadermID, GL_COMPILE_STATUS, &success);
     if(!success){
-        glGetShaderInfoLog(shaderID, 512, NULL, infoLog);
+        glGetShaderInfoLog(shadermID
+, 512, NULL, infoLog);
         std::cout << "ERROR:SHADER::" + std::to_string(type) + "::COMPILATION_FAILED\n" << infoLog << std::endl;
-        glDeleteShader(shaderID);
+        glDeleteShader(shadermID
+);
         exit(EXIT_FAILURE);
     }
 
-    return shaderID; 
+    return shadermID; 
 }
 
 shaderSource Shader::parseShader(const std::string &filePath){
@@ -59,9 +61,14 @@ shaderSource Shader::parseShader(const std::string &filePath){
 
     ShaderType type = ShaderType::NONE;
     std::ifstream stream(filePath); //gets current input stream
+    if(!stream){
+        std::cout << "ERROR::CANNOT FIND FILE" << std::endl;
+        exit(EXIT_FAILURE);
+    }
     std::string line; //string to hold each line from file
     std::stringstream ss[2];
 
+   
     while(getline(stream, line)){
     
         if(line.find("#shader") != std::string::npos){ //finds "#shader" in file
@@ -80,22 +87,26 @@ shaderSource Shader::parseShader(const std::string &filePath){
     return {ss[0].str(), ss[1].str()};
 }
 
-void Shader::use(void){
-    glUseProgram(this->ID);
-};
+void Shader::setVec4(const char* location, glm::vec4 uniform){
+    int result = glGetUniformLocation(mID, location);
+    assert(result != -1);
+    glUniform4fv(result, 1, &uniform[0]);
+}
 
-void Shader::setMat4(const std::string &name, const glm::mat4 &matrix){
-    glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
-};
+void Shader::setVec3(const char* location, glm::vec3 uniform){
+    int result = glGetUniformLocation(mID, location);
+    assert(result != -1);
+    glUniform3fv(result, 1, &uniform[0]);
+}
 
-void Shader::setVec3(const std::string &name, const glm::vec3 &color){
-    glUniform3f(glGetUniformLocation(this->ID, name.c_str()), color.r, color.g, color.b);
-};
+void Shader::setMat4(const char* location, glm::mat4 uniform){
+    int result = glGetUniformLocation(mID, location);
+    assert(result != -1);
+    glUniformMatrix4fv(result, 1, GL_FALSE, &uniform[0][0]);
+}
 
-void Shader::setFloat(const std::string &name, const float &value){
-    glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
-};
-
-void Shader::setInt(const std::string &name, const int &value){
-    glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
-};
+void Shader::setInt(const char* location, int uniform){
+    int result = glGetUniformLocation(mID, location);
+    assert(result != -1);
+    glUniform1i(result, uniform);
+}
