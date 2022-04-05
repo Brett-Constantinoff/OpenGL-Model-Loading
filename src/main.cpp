@@ -1,7 +1,6 @@
 #include "App.h"
 
 int main(){
-    App* app = new App();
-    app->start();
-    delete app;
+    App app;
+    app.start();
 }
