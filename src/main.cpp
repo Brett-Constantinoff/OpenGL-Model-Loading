@@ -3,4 +3,5 @@
 int main(){
     App* app = new App();
     app->start();
+    delete app;
 }
