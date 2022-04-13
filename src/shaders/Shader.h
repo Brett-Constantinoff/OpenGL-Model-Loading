@@ -17,6 +17,7 @@ class Shader{
         void setVec4(const char* location, glm::vec4 uniform);
         void setMat4(const char* location, glm::mat4 uniform);
         void setInt(const char* location, int uniform);
+        void use( void );
         
     private:
         int mID;

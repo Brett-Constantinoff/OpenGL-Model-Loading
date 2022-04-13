@@ -25,6 +25,10 @@ Shader::Shader(const std::string &filepath){
     glDeleteShader(fShader);
 }
 
+void Shader::use( void ){
+    glUseProgram(mID);
+}
+
 unsigned int Shader::getId( void ){
     return mID;
 }
@@ -42,11 +46,9 @@ unsigned int Shader::compileShader(const std::string &source, unsigned int type)
     char infoLog[512];
     glGetShaderiv(shadermID, GL_COMPILE_STATUS, &success);
     if(!success){
-        glGetShaderInfoLog(shadermID
-, 512, NULL, infoLog);
+        glGetShaderInfoLog(shadermID, 512, NULL, infoLog);
         std::cout << "ERROR:SHADER::" + std::to_string(type) + "::COMPILATION_FAILED\n" << infoLog << std::endl;
-        glDeleteShader(shadermID
-);
+        glDeleteShader(shadermID);
         exit(EXIT_FAILURE);
     }
 
