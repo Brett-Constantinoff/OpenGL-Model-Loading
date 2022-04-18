@@ -1,0 +1,72 @@
+#shader vertexShader
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+
+uniform mat4 uTransform;
+uniform mat4 uView;
+uniform mat4 uProjection;
+uniform mat4 uNormalMatrix;
+uniform vec3 uCameraPos;
+
+out vec2 oTexCoords;
+out vec3 oNormal;
+out vec3 oFragPos;
+out vec3 oCamPos;
+
+
+void main()
+{
+    oTexCoords = aTexCoords;    
+    gl_Position = uProjection * uView * uTransform * vec4(aPos, 1.0);
+    oFragPos = (uTransform * vec4(aPos, 1.0f)).xyz;
+    oNormal = (uNormalMatrix * vec4(aNormal, 0.0f)).xyz;
+    oCamPos = uCameraPos;
+}
+
+#shader fragmentShader
+#version 330 core
+out vec4 FragColor;
+
+in vec2 oTexCoords;
+in vec3 oNormal;
+in vec3 oFragPos;
+in vec3 oCamPos;
+
+uniform int uTextures;
+
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
+
+
+uniform vec3 uDiffuse;
+uniform vec3 uAmbient;
+uniform vec3 uSpecular;
+uniform float uLightStr;
+uniform float uN;
+uniform vec3 uLightPos;
+uniform vec3 uLightColour;
+
+vec4 j = texture(texture_specular1, oTexCoords);
+void main(){   
+
+    vec3 normal = normalize(oNormal);
+    vec3 lightDir = normalize(uLightPos - oFragPos);
+    vec3 viewDir = normalize(oCamPos - oFragPos);
+    vec3 ambient = uAmbient * uLightColour * uLightStr;
+
+    float diff = max(dot(lightDir, normal), 0.0f);
+    vec3 diffuse = uDiffuse * uLightColour * diff;
+
+    vec3 halfVec = normalize(lightDir + viewDir);
+    float spec = max(dot(halfVec, normal), 0.0f);
+    vec3 specular = uSpecular * uLightColour * pow(spec, uN);
+
+    if(uTextures == 0){
+        FragColor = vec4(ambient + diffuse + specular, 1.0f);
+    }
+    else{
+        FragColor = texture(texture_diffuse1, oTexCoords);
+    }
+}

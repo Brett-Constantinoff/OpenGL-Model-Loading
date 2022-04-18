@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -27,7 +28,7 @@ typedef struct{
 
 class TextRenderer{
     public:
-        TextRenderer();
+        TextRenderer( Shader* shader );
         void loadFont(std::string font, uint32_t fontSize);
         void render(std::string text, glm::vec2 pos, float size, glm::vec3 colour, bool centered);
     

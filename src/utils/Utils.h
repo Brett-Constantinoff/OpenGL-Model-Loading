@@ -2,13 +2,14 @@
 #define UTILS_H
 
 #include "../shaders/Shader.h"
+#include "Camera.h"
 #include <irrKlang/include/irrKlang.h>
 
 //change these for you application
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
-#define SCREEN_NAME "Hello World!"
-#define SCREEN_COLOUR glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+#define SCREEN_NAME "Model Loading"
+#define SCREEN_COLOUR glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)
 
 class Utils{
 
@@ -20,6 +21,7 @@ class Utils{
         static uint32_t loadCubeMap( std::vector<std::string> mapFiles );
         static uint32_t loadTexture(std::string fileName);
         static irrklang::ISoundEngine* createSoundEngine( void );
+        static Camera* getCamera( void );
 
         template<class T>
         static T random(T low, T high){
@@ -28,7 +30,11 @@ class Utils{
 
         static void deleteResources( void );
 
+    public:
+        static Camera* mCamera;
+
     private:
+  
         static std::vector<uint32_t> mVaos; //vertex arrays
         static std::vector<uint32_t> mVbos; //vertex buffers
         static std::vector<uint32_t> mTbos; //texture buffers

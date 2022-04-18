@@ -59,3 +59,7 @@ glm::mat4 *Camera::getView(){
     mView = glm::lookAt(mPosition, mPosition + mFront, mUp);
     return &mView;
 }
+
+glm::vec3* Camera::getPos( void ){
+    return &mPosition;
+}

@@ -25,6 +25,7 @@ class Context{
         GLFWwindow** getID( void );
         void disableDepthTesting( void );
         void enableDepthTesting( void );
+        void setDepthFunc(uint32_t func);
         void disableBlending( void );
         void enableBlending( void );
         void enableCullFace( void );
@@ -32,6 +33,7 @@ class Context{
         void blendFunc( uint32_t sFactor, uint32_t dFactor );
         void enableImGui( void );
         void disableImGui( void );
+        void setWireFrameMode( bool mode );
 
     private:
         void startFrame( void );
@@ -46,6 +48,7 @@ class Context{
         GLFWwindow* mID;
         bool is2Dapplication = true;
         bool isEnableImGui = true;
+        bool mWireFrame;
 };
 
 #endif

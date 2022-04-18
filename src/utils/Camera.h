@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 class Camera{
@@ -18,6 +19,9 @@ class Camera{
         Camera(glm::vec3 position, glm::vec3 front, glm::vec3 up);
         void move(GLFWwindow **win, float dt);
         glm::mat4* getView( void );
+        glm::vec3* getPos( void );
+    public:
+        float mZoom = 45.0f;
 
 };
 

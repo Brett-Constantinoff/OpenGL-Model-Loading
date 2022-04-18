@@ -43,13 +43,20 @@ unsigned int Shader::compileShader(const std::string &source, unsigned int type)
 
     //ensures succesful compilation
     int success;
+    int infoLogLength;
     char infoLog[512];
     glGetShaderiv(shadermID, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(shadermID, GL_INFO_LOG_LENGTH, &infoLogLength);
     if(!success){
         glGetShaderInfoLog(shadermID, 512, NULL, infoLog);
         std::cout << "ERROR:SHADER::" + std::to_string(type) + "::COMPILATION_FAILED\n" << infoLog << std::endl;
         glDeleteShader(shadermID);
         exit(EXIT_FAILURE);
+    }
+
+    if(infoLogLength > 0){
+        glGetShaderInfoLog(shadermID, 512, NULL, infoLog);
+        std::cout << "WARNING:SHADER::" + std::to_string(type) + "\n" << infoLog << std::endl;
     }
 
     return shadermID; 
@@ -64,7 +71,7 @@ shaderSource Shader::parseShader(const std::string &filePath){
     ShaderType type = ShaderType::NONE;
     std::ifstream stream(filePath); //gets current input stream
     if(!stream){
-        std::cout << "ERROR::CANNOT FIND FILE" << std::endl;
+        std::cout << "ERROR::CANNOT FIND FILE " << filePath << std::endl;
         exit(EXIT_FAILURE);
     }
     std::string line; //string to hold each line from file
@@ -91,24 +98,45 @@ shaderSource Shader::parseShader(const std::string &filePath){
 
 void Shader::setVec4(const char* location, glm::vec4 uniform){
     int result = glGetUniformLocation(mID, location);
-    assert(result != -1);
+    if(result == -1){
+        std::cout << "ERROR SETTING UNIFORM: " << location << std::endl;
+        exit(EXIT_FAILURE);
+    }
     glUniform4fv(result, 1, &uniform[0]);
 }
 
 void Shader::setVec3(const char* location, glm::vec3 uniform){
     int result = glGetUniformLocation(mID, location);
-    assert(result != -1);
+    if(result == -1){
+        std::cout << "ERROR SETTING UNIFORM: " << location << std::endl;
+        exit(EXIT_FAILURE);
+    }
     glUniform3fv(result, 1, &uniform[0]);
 }
 
 void Shader::setMat4(const char* location, glm::mat4 uniform){
     int result = glGetUniformLocation(mID, location);
-    assert(result != -1);
+    if(result == -1){
+        std::cout << "ERROR SETTING UNIFORM: " << location << std::endl;
+        exit(EXIT_FAILURE);
+    }
     glUniformMatrix4fv(result, 1, GL_FALSE, &uniform[0][0]);
 }
 
 void Shader::setInt(const char* location, int uniform){
     int result = glGetUniformLocation(mID, location);
-    assert(result != -1);
+    if(result == -1){
+        std::cout << "ERROR SETTING UNIFORM: " << location << std::endl;
+        exit(EXIT_FAILURE);
+    }
     glUniform1i(result, uniform);
+}
+
+void Shader::setFloat(const char* location, float uniform){
+    int result = glGetUniformLocation(mID, location);
+    if(result == -1){
+        std::cout << "ERROR SETTING UNIFORM: " << location << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    glUniform1f(result, uniform);
 }

@@ -32,7 +32,6 @@ void Context::initContext( ){
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
     this->mID = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_NAME, NULL, NULL);
     if(!mID){
         std::cerr << "Error creating OpenGL window" << std::endl;
@@ -73,6 +72,8 @@ void Context::startFrame(){
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
     }
+    
+    
 }
 
 //ends frame by swapping buffers and pollion IO events
@@ -135,6 +136,10 @@ void Context::enableDepthTesting( void ){
     glEnable(GL_DEPTH_TEST);
 }
 
+void Context::setDepthFunc(uint32_t func){
+    glDepthFunc(func);
+}
+
 //disables blending
 void Context::disableBlending( void ){
     glDisable(GL_BLEND);
@@ -168,4 +173,9 @@ void Context::disableImGui( void ){
 //enables imgui
 void Context::enableImGui( void ){
     isEnableImGui = true;
+}
+
+//set the mode for wire frame rendering
+void Context::setWireFrameMode( bool mode ){
+    mWireFrame = mode;
 }

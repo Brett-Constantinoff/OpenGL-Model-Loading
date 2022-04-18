@@ -1,7 +1,7 @@
 #include "TextRenderer.h"
 
-TextRenderer::TextRenderer(){
-    mShader = Utils::createShader("src/shaders/textShader.txt");
+TextRenderer::TextRenderer(Shader* shader){
+    mShader = shader;
 }
 
 void TextRenderer::loadFont(std::string font, uint32_t fontSize){

@@ -1,6 +1,6 @@
 CC=g++ -std=c++11
 CFLAGS=-Wall -g -Wno-unused-variable -pthread
-LDFLAGS=-lglfw -lglew -lfreetype -framework OpenGL
+LDFLAGS=-lglfw -lglew -lfreetype -lassimp -framework OpenGL
 OPTS = -I"../../include" -L"/usr/lib" /usr/local/include/irrKlang/bin/macosx-gcc/libIrrKlang.dylib -pthread
 
 
